@@ -1,13 +1,58 @@
 # Settings for the StealthPlugin
+# Plugin created by Unlustig
+# 
+# If you f****d up this config, then delete it and restart the server, it will than generate a new default one!
 
-# Set to false if you dont want people to use the ninja-suit to hide
-EnableSuitStealth: true
+NinjaSuit:
 
-# Set to false if players with the ninja-suit can go into and out of stealth anytime they want
-EnableSuitStealthCooldown: true
-
+    Suit:
+# -The plugin checks for the name, the id and the color, only if all are euiped by a player he can use
+#  the suit stealth
+# -Use -1 as Id if the player can have ANY item in that slot
+# -Use '' if you dont want to check for the name
+# -Use '' if you dont want t check for the color of leather armor (otherwise the syntax is '<R>,<G>,<B>'
+        Helmet: 
+            Id: 298
+            Name: '&4Ninja Hood'
+            Color: '0,0,0'
+        Chestplate:
+            Id: 299
+            Name: '&4Ninja Top'
+            Color: '0,0,0'
+        Leggins:
+            Id: 300
+            Name: '&4Ninja Pants'
+            Color: '0,0,0'
+#        Boots:
+#            Id: 301
+#            Name: '&4Ninja Tabi'
+#            Color: '0,0,0'
+        Boots:
+            Id: -1
+            Name: ''
+            Color: ''
+    Enable:
+# Set to false if you dont want people to use the ninja-suit( and dont want to achieve this with permissions ;) )
+        Suit: true
+# Set to false if you want people to use the suit without any cooldown or duration
+        Cooldown: true
+# Set to false if you don't want the ninja suit to break faster by hiding with it.
+        Damage: true
+# Set to false if you want players with a ninja suit to be always invisible (disables Cooldown)
+        OnSneak: true
+		
+    Timer:
 # Time it takes before a player can use ninja-suit stealth again.
-SuitStealthCooldown: 120
-
+        Cooldown: 120
 # Maximum time a player can use stealth with ninja-suit before getting visible again.
-SuitStealthTime: 30
+        Duration: 30
+    Messages:
+# Add the messages u want to show when the suit is on cooldown and a player tries to hide ('' for no message)
+        SuitCooldown: '&cNinja-Suit is still on cooldown!'
+
+Misc: 
+# Set the bonus damage a hit out of stealth should deal to a player or mob, in half hearts (set to 0 if you don't want bonus damage)
+        StealthAttackBonusDamage: 2
+# Set the messages, write '' for no message
+        StealthActivate: '&2Stealth activated!'
+        StealthDeactivated: '&cStealth deactivated!'

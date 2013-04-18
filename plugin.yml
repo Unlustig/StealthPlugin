@@ -20,7 +20,7 @@ permissions:
           StealthPlugin.hide.lowlight
           StealthPlugin.hide.sneak
     StealthPlugin.hide.suit:
-       description: Allows you to hide with a "ninja-suit"
+       description: Allows you to hide with a ninja-suit
        default: true
     StealthPlugin.hide.lowlight
        description: Your name will be hidden if you are in an area with a low lightlevel
@@ -34,9 +34,8 @@ commands:
       description: The StealthPlugin general command.
       usage: 
          /&lt;<command>&gt; - Shows this help.
-         /&lt;<command>&gt; reset - resets the cooldown on your invisibility
+         /&lt;<command>&gt; reset - resets the cooldown on your ninja suit stealth
          /&lt;<command>&gt; reload - reloads the config.yml
       permission: StealthPlugin.admin
-      permission-massage: You don't have the <permission> perm!
+      permission-message: You don't have the <permission> perm!
       aliases: [sp, stealth_plugin]
-      
