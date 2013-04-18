@@ -1,2 +1,13 @@
 # Settings for the StealthPlugin
 
+# Set to false if you dont want people to use the ninja-suit to hide
+EnableSuitStealth: true
+
+# Set to false if players with the ninja-suit can go into and out of stealth anytime they want
+EnableSuitStealthCooldown: true
+
+# Time it takes before a player can use ninja-suit stealth again.
+SuitStealthCooldown: 120
+
+# Maximum time a player can use stealth with ninja-suit before getting visible again.
+SuitStealthTime: 30

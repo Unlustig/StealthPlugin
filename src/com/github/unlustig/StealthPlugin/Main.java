@@ -13,21 +13,20 @@ public final class Main extends JavaPlugin {
     public void onEnable(){
     	this.getServer().getPluginManager().registerEvents(new StealthPluginListener(), this);
   		this.saveDefaultConfig();
-
+  		
     }
 
     @Override
 	public void onDisable() {
+    	
     }
     
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-/*      /&lt;<command>&gt; - Shows this help.
-        /&lt;<command>&gt; reset - resets the cooldown on your invisibility
-        /&lt;<command>&gt; reload - reloads the config.yml */
     	if (args.length > 1) {
             sender.sendMessage("Too many arguments!");
             return false;
-         } 
+         }
+    	
          if (args.length < 1) {
             sender.sendMessage("Not enough arguments!");
             return false;
@@ -40,7 +39,8 @@ public final class Main extends JavaPlugin {
     	else if(args[0].equalsIgnoreCase("reset")){
     			if (sender instanceof Player) {
     				Player player = (Player) sender;	
-    				setMetadata();
+    				setMetadata(player, "StealthCD" , (int) 0 );
+    				return true;
     			}
     			else {
     				sender.sendMessage("Only Players can use this command!");
@@ -64,7 +64,22 @@ public final class Main extends JavaPlugin {
     	  }
     	  return null;
     	}
-    public boolean hidePlayer(Player player){
-    	return false; //return false if something went wrong
-    }
+    
+    public int getMetadataAsInteger(Player player, String key){
+  	  List<MetadataValue> values = player.getMetadata(key);  
+  	  for(MetadataValue value : values){
+  	     if(value.getOwningPlugin().getDescription().getName().equals(this.getDescription().getName())){
+  	        return value.asInt();
+  	     }
+  	  }
+  	  return -1;
+  	}
+    
+    public void hidePlayer(Player player){
+    	for(Player otherplayer : getServer().getOnlinePlayers()) {
+    	    if(!otherplayer.hasPermission("StealthPlugin.seeInvisible")) {
+    	        player.hidePlayer(otherplayer);
+    	    }
+    	}
+  	}
 }

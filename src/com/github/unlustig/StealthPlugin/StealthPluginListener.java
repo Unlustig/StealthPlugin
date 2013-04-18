@@ -2,6 +2,7 @@ package com.github.unlustig.StealthPlugin;
 
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
+import org.bukkit.plugin.Plugin;
 
 public class StealthPluginListener implements Listener {
     
