@@ -1,41 +1,62 @@
 name: StealthPlugin
 main: com.github.unlustig.StealthPlugin.Main
 version: 0.1.1
-description: A Stealth Plugin containing many forms of stealth!
+description: 'A Stealth Plugin containing many forms of stealth!'
 author: Unlusig
-website: //TODO
-softdepend: //TODO
+#website: //TODO
+#softdepend: //TODO
 
 permissions:
     StealthPlugin.seeInvisibile:
-       desrciption: Allows you to see hidden players
+       desrciption: 'Allows you to see hidden players'
        default: op
     StealthPlugin.admin:
-       description: Allows you to use the /StealthPlugin command
+       description: 'Allows you to use the /StealthPlugin command'
        default: op
     StealthPlugin.hide.*:
-       description: Allows you to hide with every implemented form of stealth
+       description: 'Allows you to hide with every implemented form of stealth'
        children:
-          StealthPlugin.hide.suit
-          StealthPlugin.hide.lowlight
-          StealthPlugin.hide.sneak
+          StealthPlugin.hide.suit: true
+          StealthPlugin.hide.sneak: true
+          StealthPlugin.hide.stealth: true
     StealthPlugin.hide.suit:
-       description: Allows you to hide with a ninja-suit
+       description: 'Allows you to hide with a ninja-suit'
        default: true
-    StealthPlugin.hide.lowlight
-       description: Your name will be hidden if you are in an area with a low lightlevel
+    StealthPlugin.hide.sneak:
+       description: 'Allows you to hide yourself if you sneak in an area with low lightlevel'
        default: true
-    StealthPlugin.hide.sneak
-       description: Allows you to hide yourself if you sneak in an area with really low lightlevel
+    StealthPlugin.hide.stealth:
+       description: 'You will be invisible in a really low lightlevel'
        default: true
+    StealthPlugin.getSuit:
+       description: 'Allows you to get a ninja suit using /GetSuit'
+       default: false
+    StealthPlugin.getSuit.Others:
+       description: 'Allows you to give a ninja suit to others using /GiveSuit <Player>'
+       default: op
+       children:
+          StealthPlugin.getSuit: true
 
-commands: 
-   StealthPlugin: 
-      description: The StealthPlugin general command.
-      usage: 
-         /&lt;<command>&gt; - Shows this help.
-         /&lt;<command>&gt; reset - resets the cooldown on your ninja suit stealth
-         /&lt;<command>&gt; reload - reloads the config.yml
+commands:
+   StealthPlugin:
+#      description: The StealthPlugin general command
+#      usage: '&4/<command> - Shows this help. /n
+#         /<command> reset - resets the cooldown on your ninja suit stealth /n
+#         /<command> reload - reloads the config.yml /n
+#         /GetSuit - to get a ninja suit /n
+#         /GiveSuit <Player> - to give a ninja suit'
       permission: StealthPlugin.admin
       permission-message: You don't have the <permission> perm!
       aliases: [sp, stealth_plugin]
+   GetSuit:
+      description: This will get you a set of the Ninja Suit
+      usage: '/<command> - Gives you a set of the Ninja Suit'
+      permission: StealthPlugin.getSuit
+      permission-message: You don't have the <permission> perm!
+      aliases: [su, SuitUp, NinjaMe]
+   GiveSuit:
+      description: This will give a Ninja Suit to a player
+      usage: '/<command> <Player>- Gives the player a set of the Ninja Suit'
+      permission: StealthPlugin.getSuit.others
+      permission-message: You don't have the <permission> perm!
+      aliases: [gs, NinjaHim]
