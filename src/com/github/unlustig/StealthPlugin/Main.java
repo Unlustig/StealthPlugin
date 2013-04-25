@@ -13,6 +13,8 @@ import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.metadata.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public final class Main extends JavaPlugin {
 	
@@ -36,24 +38,26 @@ public final class Main extends JavaPlugin {
     	    public void onPlayerSneak(PlayerToggleSneakEvent event) {
     			Player player = event.getPlayer();
     			
-/*Sneak*/		if(player.hasPermission("StealthPlugin.hide.sneak")){
+/*Sneak*/		if(player.hasPermission("StealthPlugin.hide.sneak") && !(Boolean) getMetadata(player, "SneakCooldown")){
     				 
     				if(player.getEyeLocation().getBlock().getLightLevel() <= getConfig().getInt("Sneak.LightLevel")){
     					if(event.isSneaking()){
     						hide(player);
+    						startSuit(player);
     						setMetadata(player,"SneakHidden", true);
     					}
     					else {
     						show(player);
+    						startCooldown(player,"Suit");
     						setMetadata(player,"SneakHidden", false);
     					}
     				}
     			}
     			 
-/*Suit*/    	else if(player.hasPermission("StealthPlugin.hide.suit")){
+/*Suit*/    	else if(player.hasPermission("StealthPlugin.hide.suit") && !(Boolean) getMetadata(player, "SuitCooldown")){
      				
      				checkSuit(player);
-     				if(getMetadata(player,"Suit").equals(true)){
+     				if(getMetadata(player,"Equip").equals(true)){
      					if(event.isSneaking()){
      						hide(player);
     						setMetadata(player,"SuitHidden", true);
@@ -78,7 +82,7 @@ public final class Main extends JavaPlugin {
     				}
     			}
     			
-/*Stealth*/    	if(player.hasPermission("StealthPlugin.hide.stealth")){
+/*Stealth*/    	if(player.hasPermission("StealthPlugin.hide.stealth") && !(Boolean) getMetadata(player, "StealthCooldown")){
     				
     				if(getMetadata(player, "StealthHidden").equals(false) && (player.getEyeLocation().getBlock().getLightLevel() <= getConfig().getInt("Stealth.LightLevel"))){
     					hide(player);
@@ -106,27 +110,63 @@ public final class Main extends JavaPlugin {
 /*Stealth*/    	if(getMetadata(player, "StealthHidden").equals(true)){
     				if(entity instanceof Player){
     					Player target = (Player) entity;
-    					if(getMetadata(target, "StealthHidden").equals(false)){
+    					if(getMetadata(target, "StealthHidden").equals(false) && getMetadata(target, "SneakHidden").equals(false) && getMetadata(target, "SuitHidden").equals(false) ){
     						event.setDamage(event.getDamage() + getConfig().getInt("Stealth.Damage"));
     					}
     				}
     				else if(entity instanceof LivingEntity){
     					event.setDamage(event.getDamage() + getConfig().getInt("Stealth.Damage"));
     				}
-    				
     			}
 
 /*Sneak*/		else if(getMetadata(player, "SneakHidden").equals(true)){
-					
+					if(entity instanceof Player){
+						Player target = (Player) entity;
+						if(getMetadata(target, "StealthHidden").equals(false) && getMetadata(target, "SneakHidden").equals(false) && getMetadata(target, "SuitHidden").equals(false) ){
+							event.setDamage(event.getDamage() + getConfig().getInt("Stealth.Damage"));
+						}
+					}
+					else if(entity instanceof LivingEntity){
+						event.setDamage(event.getDamage() + getConfig().getInt("Stealth.Damage"));
+					}
 				}
 				
 /*Suit*/		else if(getMetadata(player, "SuitHidden").equals(true)){
-					
+					if(entity instanceof Player){
+						Player target = (Player) entity;
+						if(getMetadata(target, "StealthHidden").equals(false) && getMetadata(target, "SneakHidden").equals(false) && getMetadata(target, "SuitHidden").equals(false) ){
+							event.setDamage(event.getDamage() + getConfig().getInt("Stealth.Damage"));
+						}
+					}
+					else if(entity instanceof LivingEntity){
+						event.setDamage(event.getDamage() + getConfig().getInt("Stealth.Damage"));
+					}
 				}
     		}
+    		
     	}, this);	
     }
+    
+    public void startCooldown(final Player player, final String key){
+    	new BukkitRunnable(){
+    		public void run(){
+    	   		setMetadata(player, key + "Cooldown", false);
+    		}
+    	}.runTaskLater(this, getConfig().getLong(key + ".Cooldown") * 20);
+    	setMetadata(player, key + "Cooldown", true);
+    }
 
+    public void startSuit(final Player player){
+    	new BukkitRunnable(){
+    		public void run(){
+    			if(!(Boolean) getMetadata(player, "SuitCooldown")){
+    				startCooldown(player, "Suit");
+    				show(player);
+    			}
+    		}
+    	}.runTaskLater(this, getConfig().getLong("Suit.Duration") * 20);
+    }
+    
     @Override
 	public void onDisable() {
     	
@@ -187,18 +227,6 @@ public final class Main extends JavaPlugin {
     			this.reloadConfig();  
     			return true;
     		}
-    		else if(args[0].equalsIgnoreCase("reset")){
-    			if (sender instanceof Player) {
-    				Player player = (Player) sender;	
-    				setMetadata(player, "SuitCD" , (int) 0 );
-    				setMetadata(player, "SuitTime" , (int) 0 );
-    				return true;
-    			}
-    			else {
-    				sender.sendMessage("Only Players can use this command!");
-    				return false;
-    			}
-    		 }
     	}
     	return false; //if nothing happened return false to show the command help! 
     }
@@ -242,9 +270,9 @@ public final class Main extends JavaPlugin {
     	
     	String[] ArmorTypes = {"Helmet","Chestplate","Leggings","Boots"};
     	for(String armorPart : ArmorTypes){
-    		int itemId = getConfig().getInt("NinjaSuit.Suit." + armorPart + ".Id");
-    		String itemName = getConfig().getString("NinjaSuit.Suit." + armorPart + ".Name");
-    		String itemColor = getConfig().getString("NinjaSuit.Suit." + armorPart + ".Color");
+    		int itemId = getConfig().getInt("Suit.Equip." + armorPart + ".Id");
+    		String itemName = getConfig().getString("Suit.Equip." + armorPart + ".Name");
+    		String itemColor = getConfig().getString("Suit.Equip." + armorPart + ".Color");
     		itemName = itemName.replace('&', '§');
     		if(itemId != -1){
     			ItemStack itemstack = new ItemStack(itemId);
@@ -283,10 +311,10 @@ public final class Main extends JavaPlugin {
 			if(piece.getTypeId() != 0){
 				armorPart = piece.getType().name().substring(piece.getType().name().indexOf("_")+1).toLowerCase();
 				armorPart = Character.toUpperCase(armorPart.charAt(0)) + armorPart.substring(1);
-/*ITEMID*/		if(piece.getTypeId() != getConfig().getInt("NinjaSuit.Suit."+ armorPart +".Id")) {result = false;}
-				else if (getConfig().getInt("NinjaSuit.Suit."+ armorPart +".Id") == -1) {result = true; continue;}
-/*COLOR*/		if (297 < piece.getTypeId() &&  piece.getTypeId() < 302 && !getConfig().getString("NinjaSuit.Suit." + armorPart + ".Color").equals("any")){			
-					String[] itemColor = getConfig().getString("NinjaSuit.Suit." + armorPart + ".Color").split(",");
+/*ITEMID*/		if(piece.getTypeId() != getConfig().getInt("Suit.Equip."+ armorPart +".Id")) {result = false;}
+				else if (getConfig().getInt("Suit.Equip."+ armorPart +".Id") == -1) {result = true; continue;}
+/*COLOR*/		if (297 < piece.getTypeId() &&  piece.getTypeId() < 302 && !getConfig().getString("Suit.Equip." + armorPart + ".Color").equals("any")){			
+					String[] itemColor = getConfig().getString("Suit.Equip." + armorPart + ".Color").split(",");
 					int[] colorRGB = {0,0,0};
 					for(int i = 0; i < 3; i++){
 						try{
@@ -299,7 +327,7 @@ public final class Main extends JavaPlugin {
 					LeatherArmorMeta ColorTest = (LeatherArmorMeta) piece.getItemMeta();
 					if(!(ColorTest.getColor().equals(Color.fromRGB(colorRGB[0], colorRGB[1], colorRGB[2])))) result = false;
 /*END*/			}
-/*ITEMNAME*/	String itemName = getConfig().getString("NinjaSuit.Suit." + armorPart + ".Name");
+/*ITEMNAME*/	String itemName = getConfig().getString("Suit.Equip." + armorPart + ".Name");
 				if(itemName != null && piece.getItemMeta().hasDisplayName() && !itemName.equals("any")){
 					itemName = itemName.replace('&', '§');
 					if(!piece.getItemMeta().getDisplayName().equals(itemName)){
@@ -310,10 +338,10 @@ public final class Main extends JavaPlugin {
 			else result = false;
 		}
 		if(result){
-			setMetadata(player, "Suit", true);
+			setMetadata(player, "Equip", true);
 		}
 		else{
-			setMetadata(player, "Suit", false);
+			setMetadata(player, "Equip", false);
 		}
     }
     
@@ -331,11 +359,12 @@ public final class Main extends JavaPlugin {
     }
 
     public void initPlayer(Player player){
-		setMetadata(player, "SuitTime", 0);
-		setMetadata(player, "SuitCD", 0);
 		setMetadata(player, "SuitHidden", false);
 		setMetadata(player, "SneakHidden", false);
 		setMetadata(player, "StealthHidden", false);
+		setMetadata(player, "StealthCooldown", false);
+		setMetadata(player, "SneakCooldown", false);
+		setMetadata(player, "SuitCooldown", false);
 		if(!player.hasPermission("StealthPlugin.seeInvisible") && !GetHiddenPlayers().isEmpty()){
 			for(Player otherplayer : GetHiddenPlayers()){
 					player.hidePlayer(otherplayer);

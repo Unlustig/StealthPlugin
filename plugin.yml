@@ -41,7 +41,6 @@ commands:
    StealthPlugin:
 #      description: The StealthPlugin general command
 #      usage: '&4/<command> - Shows this help. /n
-#         /<command> reset - resets the cooldown on your ninja suit stealth /n
 #         /<command> reload - reloads the config.yml /n
 #         /GetSuit - to get a ninja suit /n
 #         /GiveSuit <Player> - to give a ninja suit'

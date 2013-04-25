@@ -35,7 +35,7 @@ Stealth:
     Cooldown: 5
 #______________________________________________________________________________________________________________
 
-NinjaSuit:
+Suit:
 # Set to false if you don't want the ninja suit to break faster by hiding with it.
     Damage: true
 # Set to false if you want players with a ninja suit to be always invisible (disables Cooldown)
@@ -50,7 +50,7 @@ NinjaSuit:
         StartCooldown: '&cThe Ninja-Suit is now on cooldown!'
         Cooldown: '&cNinja-Suit is still on cooldown!'
         EndCooldown: '&2Ninja-Suit can now be used again!'
-    Suit:
+    Equip:
 # -The plugin checks for the name, the id and the color, only if all are euiped by a player he can use the suit stealth
 # -Use -1 as Id if the player can have ANY item in that slot (0 for empty slot) (0 and -1 will ignore color and name for that item)
 # -Use 'any' if you dont want to check for the name (use & for colorcodes)
